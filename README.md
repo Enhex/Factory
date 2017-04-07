@@ -10,6 +10,7 @@ struct base {
   base() { std::cout << "base\n"; }
 };
 
+// select base and key types once using an alias
 using FactoryBase = Factory<base, std::string>;
 
 template<typename Derived>
@@ -19,17 +20,18 @@ using RegisterBase = Register<base, std::string, Derived>;
 struct derived : base {
   derived() { std::cout << "derived\n"; }
 
-  // C++17, macro can be used to eliminate type name repition as string
-  //inline const static RegisterBase<derived> reg{ "derived" };
-  // pre-C++17, initialize in .cpp file
-  static RegisterBase<derived> reg;
+  // Register a factory for the derived class
+  static RegisterBase<derived> reg; // pre-C++17, initialize in .cpp file
+  // C++17
+  //inline static RegisterBase<derived> reg{ "derived" };
 };
 RegisterBase<derived> derived::reg("derived");
 
 
 int main()
 {
-    auto d = FactoryBase::create("derived");
+  // instantiate an instance of derived and get a unique_ptr to base
+  auto d = FactoryBase::create("derived");
 }
 ```
 
